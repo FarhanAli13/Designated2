@@ -11,6 +11,9 @@ const userRoutes = require("./Routes/userRoutes");
 const globalErrorHandler = require("./Controllers/errorControllers");
 
 const app = express();
+app.use(express.static('public'));
+
+
 
 // ===== Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
@@ -31,6 +34,13 @@ app.use(express.json());
 // Routes
 app.use("/user", userRoutes);
 app.get("/", (_, res) => res.json({}));
+app.get('/success', (req, res) => {
+  res.sendFile(__dirname + '/public/success.html');
+});
+
+app.get('/failure', (req, res) => {
+  res.sendFile(__dirname + '/public/failure.html');
+});
 
 app.use("", indexRoutes);
 
