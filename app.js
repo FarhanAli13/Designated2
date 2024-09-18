@@ -7,12 +7,11 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xssClean = require("xss-clean");
 const indexRoutes = require("./Routes/indexRoutes");
 const userRoutes = require("./Routes/userRoutes");
-
+const path = require('path');
 const globalErrorHandler = require("./Controllers/errorControllers");
 
 const app = express();
-app.use(express.static('public'));
-
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 // ===== Data sanitization against NoSQL query injection
@@ -34,13 +33,19 @@ app.use(express.json());
 // Routes
 app.use("/user", userRoutes);
 app.get("/", (_, res) => res.json({}));
-app.get('/success.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'success.html'));
-});
+app.all(['/success', '/failure'], (req, res) => {
+  const isSuccess = req.path === '/success';
+  const fileName = isSuccess ? 'success.html' : 'failure.html';
+  
+  // Optional: Log the request method
+  console.log(`Redirect to ${fileName} via ${req.method} request.`);
 
-// Failure Route ending with .html
-app.get('/failure.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'failure.html'));
+  res.sendFile(path.join(__dirname, 'public', fileName), (err) => {
+    if (err) {
+      console.error(`Error sending ${fileName}:`, err);
+      res.status(500).send('Internal Server Error');
+    }
+  });
 });
 
 app.use("", indexRoutes);
