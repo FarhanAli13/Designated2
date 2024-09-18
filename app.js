@@ -34,12 +34,13 @@ app.use(express.json());
 // Routes
 app.use("/user", userRoutes);
 app.get("/", (_, res) => res.json({}));
-app.get('/success', (req, res) => {
-  res.sendFile(__dirname + '/public/success.html');
+app.get('/success.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'success.html'));
 });
 
-app.get('/failure', (req, res) => {
-  res.sendFile(__dirname + '/public/failure.html');
+// Failure Route ending with .html
+app.get('/failure.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'failure.html'));
 });
 
 app.use("", indexRoutes);
